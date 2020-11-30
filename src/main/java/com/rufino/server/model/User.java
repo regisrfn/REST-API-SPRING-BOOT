@@ -65,10 +65,16 @@ public class User {
         this.userId = userId;
     }
 
-    public User(UUID userId, String userName, String userNickname, String userEmail, String userPassword) {
-        this.userId = userId;
+    public User(String userName, String userNickname, String userEmail, String userPassword) {
         this.userName = userName;
         this.userNickname = userNickname;
+        this.userEmail = userEmail;
+        this.userPassword = userPassword;
+        this.createdAt = new Date();
+    }
+
+    public User(String userName,String userEmail, String userPassword) {
+        this.userName = userName;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
         this.createdAt = new Date();
