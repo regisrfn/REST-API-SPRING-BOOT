@@ -1,2 +1,2 @@
-INSERT INTO users (user_id, user_name, user_nickname, user_email, user_password, createdAt)
+INSERT INTO users (user_id, user_name, user_nickname, user_email, user_password, created_at)
 VALUES ('1a73efb7-c368-4693-92ad-f969ff2a0701', 'Joe Doe', 'Joe', 'joe@gmail.com', '123456','2020-11-29T21:08:37Z');

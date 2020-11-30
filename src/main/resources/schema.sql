@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS users (
     user_nickname VARCHAR NOT NULL,
     user_email VARCHAR NOT NULL UNIQUE,
     user_password VARCHAR NOT NULL,
-    createdAt DATE
+    created_at DATE
 );
