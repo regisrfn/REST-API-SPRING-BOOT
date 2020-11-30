@@ -27,7 +27,7 @@ class ServerApplicationTests {
 	@Test
 	void createNewUser() {
 		try {
-			User user = new User("Joe Doe", "regis@gmail.com", "123456");
+			User user = new User("Joe Doe", "joe@gmail.com", "123456");
 			saveAndAssert(user);
 			System.out.println(user);
 			assert (true);
@@ -47,7 +47,6 @@ class ServerApplicationTests {
 			assert (false);
 		} catch (Exception e) {
 			String columnError = userService.handleError(e);
-			e.printStackTrace();
 			assertEquals("user_name", columnError);
 		}
 
@@ -61,7 +60,6 @@ class ServerApplicationTests {
 			assert (false);
 		} catch (Exception e) {
 			String columnError = userService.handleError(e);
-			e.printStackTrace();
 			assertEquals("user_email", columnError);
 		}
 	}

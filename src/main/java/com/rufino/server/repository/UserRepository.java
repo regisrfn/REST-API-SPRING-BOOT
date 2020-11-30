@@ -1,5 +1,6 @@
 package com.rufino.server.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,14 +17,18 @@ public class UserRepository implements UserDao {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public User insertUser(UUID id, User user) throws Exception{
+    public User insertUser(UUID id, User user) throws Exception {
+        Date date = new Date();
         int result = jdbcTemplate.update(
                 "INSERT INTO users " + "(user_id, user_name, user_nickname, user_email, user_password, created_at)"
                         + "VALUES (?, ?, ?, ?, ?, ?)",
-                id, user.getUserName(), user.getUserNickname(), user.getUserEmail(), user.getUserPassword(),
-                user.getCreatedAt());
-        user.setUserId((result > 0 ? id : null));
-        return user;
+                id, user.getUserName(), user.getUserNickname(), user.getUserEmail(), user.getUserPassword(), date);
+        if (result > 0) {
+            user.setUserId(id);
+            user.setCreatedAt(date);
+            return user;
+        }
+        return null;        
     }
 
     @Override
@@ -49,6 +54,7 @@ public class UserRepository implements UserDao {
         // TODO Auto-generated method stub
         return null;
     }
+
     @Autowired
     public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
