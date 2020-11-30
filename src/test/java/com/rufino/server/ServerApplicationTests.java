@@ -1,13 +1,8 @@
 package com.rufino.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.Console;
-import java.sql.SQLException;
-
 import com.rufino.server.model.User;
 import com.rufino.server.service.UserService;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +22,21 @@ class ServerApplicationTests {
 	@BeforeEach
 	void clearTable() {
 		jdbcTemplate.update("DELETE FROM USERS");
+	}
+
+	@Test
+	void createNewUser() {
+		try {
+			User user = new User("Joe Doe", "regis@gmail.com", "123456");
+			saveAndAssert(user);
+			System.out.println(user);
+			assert (true);
+		} catch (Exception e) {
+			String columnError = userService.handleError(e);
+			e.printStackTrace();
+			assertEquals("user_name", columnError);
+		}
+
 	}
 
 	@Test
