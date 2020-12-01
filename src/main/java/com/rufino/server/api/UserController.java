@@ -1,5 +1,7 @@
 package com.rufino.server.api;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rufino.server.model.User;
 import com.rufino.server.service.UserService;
@@ -19,6 +21,7 @@ public class UserController {
 
     private final UserService userService;
     private ObjectMapper om;
+    
 
     @Autowired
     public UserController(UserService userService) {
@@ -35,8 +38,11 @@ public class UserController {
             userSaved = userService.addUser(user);
             message = "OK";
             String savedUserString = om.writeValueAsString(userSaved);
+            Algorithm algorithm = Algorithm.HMAC256("secret");
+            String token = JWT.create().withClaim("userId", user.getUserId().toString()).withClaim("userEmail", user.getUserEmail()).sign(algorithm);
             res.put("user", savedUserString);
             res.put("message", message);
+            res.put("token", token);
             return res.toString();
         } catch (Exception e) {
             e.printStackTrace();
