@@ -13,7 +13,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserRepository implements UserDao {
-
+    
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override

@@ -8,12 +8,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rufino.server.model.User;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,8 +33,11 @@ public class PostUserHttpTest {
     }
 
     @Test
-    void addUser() throws Exception {
+    void addUserTest() throws Exception {
         JSONObject my_obj = new JSONObject();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        ObjectMapper om = new ObjectMapper();
+
         my_obj.put("userName", "Joe Doe");
         my_obj.put("userNickname", "doe");
         my_obj.put("userEmail", "doe@gmail.com");
@@ -43,6 +50,10 @@ public class PostUserHttpTest {
         JSONObject res = new JSONObject(result.getResponse().getContentAsString());
         assertEquals("OK", res.getString("message"));
         assertNotNull(res.getString("user"));
+
+        User savedUser = om.readValue(res.getString("user"), User.class);
+        String hashedPassword = savedUser.getUserPassword();
+        assert (passwordEncoder.matches("123456", hashedPassword));
     }
 
 }
