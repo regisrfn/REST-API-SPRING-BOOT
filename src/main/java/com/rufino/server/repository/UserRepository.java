@@ -13,23 +13,20 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserRepository implements UserDao {
-    
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override
     public User insertUser(UUID id, User user) throws Exception {
-        Date date = new Date();
+        user.setCreatedAt(new Date());
+        user.setUserId(id);
         int result = jdbcTemplate.update(
                 "INSERT INTO users " + "(user_id, user_name, user_nickname, user_email, user_password, created_at)"
                         + "VALUES (?, ?, ?, ?, ?, ?)",
-                id, user.getUserName(), user.getUserNickname(), user.getUserEmail(), user.getUserPassword(), date);
-        if (result > 0) {
-            user.setUserId(id);
-            user.setCreatedAt(date);
-            return user;
-        }
-        return null;        
+                user.getUserId(), user.getUserName(), user.getUserNickname(), user.getUserEmail(),
+                user.getUserPassword(), user.getCreatedAt());
+        return (result > 0 ? user : null);
     }
 
     @Override

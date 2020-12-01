@@ -12,26 +12,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("api/v1/user")
 @CrossOrigin
 public class UserController {
-    
+
     private final UserService userService;
-    
+    private ObjectMapper om;
+
     @Autowired
-    public UserController (UserService userService){
+    public UserController(UserService userService) {
         this.userService = userService;
+        om = new ObjectMapper();
     }
 
     @PostMapping("register")
-    public String saveUser(@RequestBody User user){
+    public String saveUser(@RequestBody User user) {
         User userSaved;
         String message;
         JSONObject res = new JSONObject();
         try {
-            ObjectMapper om = new ObjectMapper();
             userSaved = userService.addUser(user);
             message = "OK";
             String savedUserString = om.writeValueAsString(userSaved);
@@ -44,8 +44,7 @@ public class UserController {
             res.put("message", message);
             return res.toString();
         }
-        
-        
+
     }
-    
+
 }
