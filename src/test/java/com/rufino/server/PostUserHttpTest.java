@@ -79,7 +79,7 @@ public class PostUserHttpTest {
 
         MvcResult result = mockMvc.perform(
                 post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isBadRequest()).andReturn();
 
         JSONObject res = new JSONObject(result.getResponse().getContentAsString());
         assertEquals("Not OK", res.getString("message"));

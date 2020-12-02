@@ -18,7 +18,7 @@ public class UserRepository implements UserDao {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public User insertUser(UUID id, User user) throws Exception {
+    public User insertUser(UUID id, User user){
         user.setCreatedAt(new Date());
         user.setUserId(id);
         int result = jdbcTemplate.update(

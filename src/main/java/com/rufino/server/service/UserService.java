@@ -4,6 +4,7 @@ import com.rufino.server.dao.UserDao;
 import com.rufino.server.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,14 @@ public class UserService {
         this.userDao = userDao;
     }
 
-    public User addUser(User user) throws Exception {
+    public User addUser(User user) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(user.getUserPassword());
         user.setUserPassword(hashedPassword);
         return userDao.insertUser(user);
     }
 
-    public String handleSqlError(Exception e) {
+    public String handleSqlError(DataIntegrityViolationException e) {
         String ss = e.getMessage();
         ss = ss.replace("\n", "").replace("\r", "");
         String pattern = ".*PreparedStatementCallback;.*SQL.*; ERROR:.*\"(\\w*user_\\w+)\".*";

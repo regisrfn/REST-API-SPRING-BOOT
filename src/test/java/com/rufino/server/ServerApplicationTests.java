@@ -1,6 +1,7 @@
 package com.rufino.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.rufino.server.model.User;
 import com.rufino.server.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest
@@ -30,7 +33,7 @@ class ServerApplicationTests {
 			User user = new User("Joe Doe", "joe@gmail.com", "123456");
 			saveAndAssert(user);
 			assert (true);
-		} catch (Exception e) {
+		} catch (DataIntegrityViolationException e) {
 			String columnError = userService.handleSqlError(e);
 			e.printStackTrace();
 			assertEquals("user_name", columnError);
@@ -44,7 +47,7 @@ class ServerApplicationTests {
 			User user = new User(null, "regis@gmail.com", "123456");
 			saveAndAssert(user);
 			assert (false);
-		} catch (Exception e) {
+		} catch (DataIntegrityViolationException e) {
 			e.printStackTrace();
 			String columnError = userService.handleSqlError(e);
 			assertEquals("Invalid name value", columnError);
@@ -58,7 +61,7 @@ class ServerApplicationTests {
 			User user = new User("Joe Doe", null, "123456");
 			saveAndAssert(user);
 			assert (false);
-		} catch (Exception e) {
+		} catch (DataIntegrityViolationException e) {
 			e.printStackTrace();
 			String columnError = userService.handleSqlError(e);
 			assertEquals("Invalid email value", columnError);
@@ -71,16 +74,16 @@ class ServerApplicationTests {
 			User user = new User("Joe Doe", "joe@gmail.com", "123456");
 			saveAndAssert(user);
 			User newUser = new User("John Doe", "joe@gmail.com", "123456");
-			saveAndAssert(newUser,1,2);
+			saveAndAssert(newUser, 1, 2);
 			assert (false);
-		} catch (Exception e) {
+		} catch (DuplicateKeyException e) {
 			e.printStackTrace();
 			String columnError = userService.handleSqlError(e);
 			assertEquals("Duplicated email", columnError);
 		}
 	}
 
-	private void saveAndAssert(User user) throws Exception {
+	private void saveAndAssert(User user) {
 		long countBeforeInsert = jdbcTemplate.queryForObject("select count(*) from users", Long.class);
 		assertEquals(0, countBeforeInsert);
 		userService.addUser(user);
@@ -88,7 +91,7 @@ class ServerApplicationTests {
 		assertEquals(1, countAfterInsert);
 	}
 
-	private void saveAndAssert(User user, int before, int after) throws Exception {
+	private void saveAndAssert(User user, int before, int after) {
 		long countBeforeInsert = jdbcTemplate.queryForObject("select count(*) from users", Long.class);
 		assertEquals(before, countBeforeInsert);
 		userService.addUser(user);

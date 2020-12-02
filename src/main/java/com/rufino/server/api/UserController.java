@@ -2,12 +2,15 @@ package com.rufino.server.api;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rufino.server.exception.ApiRequestException;
 import com.rufino.server.model.User;
 import com.rufino.server.service.UserService;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,13 +54,14 @@ public class UserController {
             res.put("message", message);
             res.put("token", token);
             return res.toString();
-        } catch (Exception e) {
-            message = "Not OK";
+        } catch (DataIntegrityViolationException e) {
             error = userService.handleSqlError(e);
-            res.put("message", message);
-            res.put("error", error);
-            return res.toString();
-        }
+            throw new ApiRequestException(error);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+		}
 
     }
 
