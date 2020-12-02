@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 @RestController
 @RequestMapping("api/v1/user")
 @CrossOrigin
@@ -21,11 +23,15 @@ public class UserController {
 
     private final UserService userService;
     private ObjectMapper om;
+    Dotenv dotenv;
+    String jwtSecret;
 
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
         om = new ObjectMapper();
+        dotenv = Dotenv.load();
+        jwtSecret = dotenv.get("JWT_SECRET");
     }
 
     @PostMapping("register")
@@ -38,7 +44,7 @@ public class UserController {
             userSaved = userService.addUser(user);
             message = "OK";
             String savedUserString = om.writeValueAsString(userSaved);
-            Algorithm algorithm = Algorithm.HMAC256("secret");
+            Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
             String token = JWT.create().withClaim("userId", user.getUserId().toString())
                     .withClaim("userEmail", user.getUserEmail()).sign(algorithm);
             res.put("user", savedUserString);
