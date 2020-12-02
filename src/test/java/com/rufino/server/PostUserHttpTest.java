@@ -84,6 +84,7 @@ public class PostUserHttpTest {
         JSONObject res = new JSONObject(result.getResponse().getContentAsString());
         assertEquals("Not OK", res.getString("message"));
         assertEquals("Invalid name value", res.getString("error"));
+        assert(false);
     }
 
 }

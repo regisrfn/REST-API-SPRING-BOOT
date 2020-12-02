@@ -2,8 +2,13 @@ package com.rufino.server.exception;
 
 import java.time.ZonedDateTime;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+
 import org.springframework.http.HttpStatus;
 
+@JsonInclude(Include.NON_NULL)
 public class ApiException {
     private String message = "Not OK";
     private String error;
@@ -14,6 +19,12 @@ public class ApiException {
     public ApiException(String error, Throwable throwable, HttpStatus httpStatus, ZonedDateTime timestamp) {
         this.setError(error);
         this.setThrowable(throwable);
+        this.setHttpStatus(httpStatus);
+        this.timestamp = timestamp;
+    }
+
+    public ApiException(String error, HttpStatus httpStatus, ZonedDateTime timestamp) {
+        this.setError(error);
         this.setHttpStatus(httpStatus);
         this.timestamp = timestamp;
     }
