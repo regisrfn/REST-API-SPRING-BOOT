@@ -24,11 +24,20 @@ public class UserService {
         return userDao.insertUser(user);
     }
 
-    public String handleError(Exception e) {
+    public String handleSqlError(Exception e) {
         String ss = e.getMessage();
         ss = ss.replace("\n", "").replace("\r", "");
-        String pattern = "(PreparedStatementCallback;.*SQL.*; ERROR:.*column \")(\\w+)(\".*)()";
-        String update = (ss.replaceAll(pattern, "$2"));
-        return update;
+        String pattern = ".*PreparedStatementCallback;.*SQL.*; ERROR:.*\"(\\w*user_\\w+)\".*";
+        String error = (ss.replaceAll(pattern, "$1"));
+
+        String[] errorString = error.split("_");
+
+        if (errorString.length == 2) {
+            error = "Invalid " + errorString[1] + " value";
+        } else if ((errorString.length == 4)) {
+            error = "Duplicated " + errorString[2];
+        }
+
+        return error;
     }
 }

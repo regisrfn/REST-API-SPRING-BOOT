@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -54,6 +55,22 @@ public class PostUserHttpTest {
         User savedUser = om.readValue(res.getString("user"), User.class);
         String hashedPassword = savedUser.getUserPassword();
         assert (passwordEncoder.matches("123456", hashedPassword));
+    }
+
+    @Test
+    void addUserTest_errorExpected() throws Exception {
+        JSONObject my_obj = new JSONObject();
+        my_obj.put("userNickname", "doe");
+        my_obj.put("userEmail", "doe@gmail.com");
+        my_obj.put("userPassword", "123456");
+
+        MvcResult result = mockMvc.perform(
+                post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+                .andExpect(status().isOk()).andReturn();
+
+        JSONObject res = new JSONObject(result.getResponse().getContentAsString());
+        assertEquals("Not OK", res.getString("message"));
+        assertEquals("Invalid name value", res.getString("error"));
     }
 
 }

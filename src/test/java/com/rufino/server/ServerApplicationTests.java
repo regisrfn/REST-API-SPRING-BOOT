@@ -29,10 +29,9 @@ class ServerApplicationTests {
 		try {
 			User user = new User("Joe Doe", "joe@gmail.com", "123456");
 			saveAndAssert(user);
-			System.out.println(user);
 			assert (true);
 		} catch (Exception e) {
-			String columnError = userService.handleError(e);
+			String columnError = userService.handleSqlError(e);
 			e.printStackTrace();
 			assertEquals("user_name", columnError);
 		}
@@ -46,8 +45,9 @@ class ServerApplicationTests {
 			saveAndAssert(user);
 			assert (false);
 		} catch (Exception e) {
-			String columnError = userService.handleError(e);
-			assertEquals("user_name", columnError);
+			e.printStackTrace();
+			String columnError = userService.handleSqlError(e);
+			assertEquals("Invalid name value", columnError);
 		}
 
 	}
@@ -59,8 +59,24 @@ class ServerApplicationTests {
 			saveAndAssert(user);
 			assert (false);
 		} catch (Exception e) {
-			String columnError = userService.handleError(e);
-			assertEquals("user_email", columnError);
+			e.printStackTrace();
+			String columnError = userService.handleSqlError(e);
+			assertEquals("Invalid email value", columnError);
+		}
+	}
+
+	@Test
+	void createNewUser_error_duplicatedEmail() {
+		try {
+			User user = new User("Joe Doe", "joe@gmail.com", "123456");
+			saveAndAssert(user);
+			User newUser = new User("John Doe", "joe@gmail.com", "123456");
+			saveAndAssert(newUser,1,2);
+			assert (false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			String columnError = userService.handleSqlError(e);
+			assertEquals("Duplicated email", columnError);
 		}
 	}
 
@@ -70,6 +86,14 @@ class ServerApplicationTests {
 		userService.addUser(user);
 		long countAfterInsert = jdbcTemplate.queryForObject("select count(*) from users", Long.class);
 		assertEquals(1, countAfterInsert);
+	}
+
+	private void saveAndAssert(User user, int before, int after) throws Exception {
+		long countBeforeInsert = jdbcTemplate.queryForObject("select count(*) from users", Long.class);
+		assertEquals(before, countBeforeInsert);
+		userService.addUser(user);
+		long countAfterInsert = jdbcTemplate.queryForObject("select count(*) from users", Long.class);
+		assertEquals(after, countAfterInsert);
 	}
 
 }

@@ -21,7 +21,6 @@ public class UserController {
 
     private final UserService userService;
     private ObjectMapper om;
-    
 
     @Autowired
     public UserController(UserService userService) {
@@ -33,21 +32,24 @@ public class UserController {
     public String saveUser(@RequestBody User user) {
         User userSaved;
         String message;
+        String error;
         JSONObject res = new JSONObject();
         try {
             userSaved = userService.addUser(user);
             message = "OK";
             String savedUserString = om.writeValueAsString(userSaved);
             Algorithm algorithm = Algorithm.HMAC256("secret");
-            String token = JWT.create().withClaim("userId", user.getUserId().toString()).withClaim("userEmail", user.getUserEmail()).sign(algorithm);
+            String token = JWT.create().withClaim("userId", user.getUserId().toString())
+                    .withClaim("userEmail", user.getUserEmail()).sign(algorithm);
             res.put("user", savedUserString);
             res.put("message", message);
             res.put("token", token);
             return res.toString();
         } catch (Exception e) {
-            e.printStackTrace();
             message = "Not OK";
+            error = userService.handleSqlError(e);
             res.put("message", message);
+            res.put("error", error);
             return res.toString();
         }
 

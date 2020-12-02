@@ -10,6 +10,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 @Configuration
 public class DatabaseConfig {
+    
     Dotenv dotenv;
     String database_url;
 
@@ -21,11 +22,7 @@ public class DatabaseConfig {
     @Bean
     public DataSource postgresDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        if (database_url == null || database_url.isBlank())
-            dataSource.setUrl("jdbc:postgresql://localhost:5432/userdb_test");
-        else
-            dataSource.setUrl(database_url);
+        dataSource.setUrl(database_url);
         dataSource.setUsername("postgres");
         dataSource.setPassword("mysecretpassword");
 
