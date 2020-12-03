@@ -100,4 +100,18 @@ public class PostUserHttpTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
                 .andExpect(status().isBadRequest()).andReturn();
     }
+
+    @Test
+    void addUserTest_errorExpected_email() throws Exception {
+        JSONObject my_obj = new JSONObject();
+        my_obj.put("userName", "Joe Doe");
+        my_obj.put("userNickname", "doe");
+        my_obj.put("userPassword", "123456");
+
+        mockMvc.perform(
+                post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userEmail", Is.is("Invalid email value")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
+                .andExpect(status().isBadRequest()).andReturn();
+    }
 }

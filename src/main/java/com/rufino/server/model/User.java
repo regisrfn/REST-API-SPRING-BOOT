@@ -17,7 +17,9 @@ public class User {
     @NotBlank(message = "Invalid name value")
     private String userName;
     private String userNickname;
+    @NotBlank(message = "Invalid email value")
     private String userEmail;
+    @NotBlank(message = "Invalid password value")
     private String userPassword;
     private Date createdAt;
 
