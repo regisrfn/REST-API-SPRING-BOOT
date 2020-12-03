@@ -30,7 +30,6 @@ public class UserService {
         ss = ss.replace("\n", "").replace("\r", "");
         String pattern = ".*PreparedStatementCallback;.*SQL.*; ERROR:.*\"(\\w*user_\\w+)\".*";
         String error = (ss.replaceAll(pattern, "$1"));
-
         String[] errorString = error.split("_");
 
         if (errorString.length == 2) {

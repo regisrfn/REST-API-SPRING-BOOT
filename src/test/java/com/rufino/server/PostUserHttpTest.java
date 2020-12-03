@@ -1,5 +1,6 @@
 package com.rufino.server;
 
+import org.hamcrest.core.Is;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -71,20 +73,31 @@ public class PostUserHttpTest {
     }
 
     @Test
-    void addUserTest_errorExpected() throws Exception {
+    void addUserTest_errorExpected_name() throws Exception {
         JSONObject my_obj = new JSONObject();
         my_obj.put("userNickname", "doe");
         my_obj.put("userEmail", "doe@gmail.com");
         my_obj.put("userPassword", "123456");
 
-        MvcResult result = mockMvc.perform(
+        mockMvc.perform(
                 post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userName", Is.is("Invalid name value")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
                 .andExpect(status().isBadRequest()).andReturn();
-
-        JSONObject res = new JSONObject(result.getResponse().getContentAsString());
-        assertEquals("Not OK", res.getString("message"));
-        assertEquals("Invalid name value", res.getString("error"));
-        assert(false);
     }
 
+    @Test
+    void addUserTest_errorExpected_name2() throws Exception {
+        JSONObject my_obj = new JSONObject();
+        my_obj.put("userName", "   ");
+        my_obj.put("userNickname", "doe");
+        my_obj.put("userEmail", "doe@gmail.com");
+        my_obj.put("userPassword", "123456");
+
+        mockMvc.perform(
+                post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userName", Is.is("Invalid name value")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
+                .andExpect(status().isBadRequest()).andReturn();
+    }
 }

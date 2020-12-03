@@ -3,6 +3,8 @@ package com.rufino.server.model;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -11,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonPropertyOrder({"userId", "userName","userNickname", "userEmail", "userPassword", "createdAt" })
 public class User {
     private UUID userId;
+    
+    @NotBlank(message = "Invalid name value")
     private String userName;
     private String userNickname;
     private String userEmail;
