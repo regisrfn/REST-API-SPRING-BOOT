@@ -13,7 +13,6 @@ import com.rufino.server.service.UserService;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,32 +41,24 @@ public class UserController {
 
     @PostMapping("register")
     public String saveUser(@Valid @RequestBody User user) {
-        String error;
+
         JSONObject res = new JSONObject();
         try {
             return save(user, res);
-        } catch (DataIntegrityViolationException e) {
-            error = userService.handleSqlError(e);
-            throw new ApiRequestException(error);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
-		}
+        } catch (JSONException | JsonProcessingException e) {
+            throw new ApiRequestException(e.getMessage());
+        }
 
     }
 
     private String save(User user, JSONObject res) throws JsonProcessingException, JSONException {
-        User userSaved;
-        String message;
-        userSaved = userService.addUser(user);
-        message = "OK";
+        User userSaved = userService.addUser(user);
         String savedUserString = om.writeValueAsString(userSaved);
         Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
         String token = JWT.create().withClaim("userId", user.getUserId().toString())
                 .withClaim("userEmail", user.getUserEmail()).sign(algorithm);
         res.put("user", savedUserString);
-        res.put("message", message);
+        res.put("message", "OK");
         res.put("token", token);
         return res.toString();
     }

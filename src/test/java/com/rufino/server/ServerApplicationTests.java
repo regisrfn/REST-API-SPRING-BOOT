@@ -2,8 +2,11 @@ package com.rufino.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Map;
+
 import com.rufino.server.model.User;
 import com.rufino.server.service.UserService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +37,8 @@ class ServerApplicationTests {
 			saveAndAssert(user);
 			assert (true);
 		} catch (DataIntegrityViolationException e) {
-			String columnError = userService.handleSqlError(e);
 			e.printStackTrace();
-			assertEquals("user_name", columnError);
+			assert(false);
 		}
 
 	}
@@ -48,9 +50,8 @@ class ServerApplicationTests {
 			saveAndAssert(user);
 			assert (false);
 		} catch (DataIntegrityViolationException e) {
-			e.printStackTrace();
-			String columnError = userService.handleSqlError(e);
-			assertEquals("Invalid name value", columnError);
+			Map<String, String> columnError = userService.handleSqlError(e);
+			assertEquals("Invalid name value", columnError.get("userName"));
 		}
 
 	}
@@ -62,9 +63,8 @@ class ServerApplicationTests {
 			saveAndAssert(user);
 			assert (false);
 		} catch (DataIntegrityViolationException e) {
-			e.printStackTrace();
-			String columnError = userService.handleSqlError(e);
-			assertEquals("Invalid email value", columnError);
+			Map<String, String> columnError = userService.handleSqlError(e);
+			assertEquals("Invalid email value", columnError.get("userEmail"));
 		}
 	}
 
@@ -77,9 +77,8 @@ class ServerApplicationTests {
 			saveAndAssert(newUser, 1, 2);
 			assert (false);
 		} catch (DuplicateKeyException e) {
-			e.printStackTrace();
-			String columnError = userService.handleSqlError(e);
-			assertEquals("Duplicated email", columnError);
+			Map<String, String> columnError = userService.handleSqlError(e);
+			assertEquals("Duplicated email", columnError.get("userEmail"));
 		}
 	}
 

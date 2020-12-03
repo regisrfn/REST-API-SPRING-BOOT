@@ -113,5 +113,41 @@ public class PostUserHttpTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userEmail", Is.is("Invalid email value")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
                 .andExpect(status().isBadRequest()).andReturn();
+
+    }
+
+    @Test
+    void addUserTest_errorExpected_emailDuplicated() throws Exception {
+        JSONObject my_obj = new JSONObject();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        ObjectMapper om = new ObjectMapper();
+        Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
+
+        my_obj.put("userName", "Joe Doe");
+        my_obj.put("userNickname", "doe");
+        my_obj.put("userEmail", "doe@gmail.com");
+        my_obj.put("userPassword", "123456");
+
+        MvcResult result = mockMvc.perform(
+                post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+                .andExpect(status().isOk()).andReturn();
+
+        JSONObject res = new JSONObject(result.getResponse().getContentAsString());
+        assertEquals("OK", res.getString("message"));
+        assertNotNull(res.getString("user"));
+
+        User savedUser = om.readValue(res.getString("user"), User.class);
+        String hashedPassword = savedUser.getUserPassword();
+        assert (passwordEncoder.matches("123456", hashedPassword));
+
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        verifier.verify(res.getString("token"));
+
+        mockMvc.perform(
+                post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userEmail", Is.is("Duplicated email")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
+                .andExpect(status().isBadRequest()).andReturn();
+
     }
 }
