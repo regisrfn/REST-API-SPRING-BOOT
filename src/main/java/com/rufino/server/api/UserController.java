@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rufino.server.exception.ApiRequestException;
 import com.rufino.server.model.User;
 import com.rufino.server.service.UserService;
+import com.rufino.server.validation.ValidateEmail;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,6 +33,9 @@ public class UserController {
     String jwtSecret;
 
     @Autowired
+    ValidateEmail validateEmail;
+
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
         om = new ObjectMapper();
@@ -44,6 +48,8 @@ public class UserController {
 
         JSONObject res = new JSONObject();
         try {
+            if (!validateEmail.test(user.getUserEmail()))
+                throw new ApiRequestException("Invalid email format");
             return save(user, res);
         } catch (JSONException | JsonProcessingException e) {
             throw new ApiRequestException(e.getMessage());
