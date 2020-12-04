@@ -18,7 +18,7 @@ public class DatabaseConfig {
     String url, username, database_password;
 
     public DatabaseConfig() {
-        dotenv = Dotenv.load();
+        dotenv = Dotenv.configure().ignoreIfMissing().load();
         url = dotenv.get("DATABASE_URL");
         // DATABASE_URL=postgres://postgres:mysecretpassword@localhost:5432/userdb
     }
