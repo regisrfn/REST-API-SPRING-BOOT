@@ -39,7 +39,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
         om = new ObjectMapper();
-        dotenv = Dotenv.load();
+        dotenv = Dotenv.configure().ignoreIfMissing().load();
         jwtSecret = dotenv.get("JWT_SECRET");
     }
 
