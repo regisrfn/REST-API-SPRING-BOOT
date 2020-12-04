@@ -1,5 +1,8 @@
 package com.rufino.server.config;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
@@ -10,21 +13,27 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 @Configuration
 public class DatabaseConfig {
-    
+
     Dotenv dotenv;
-    String database_url;
+    String url, username, database_password;
 
     public DatabaseConfig() {
         dotenv = Dotenv.load();
-        database_url = dotenv.get("DATABASE_API");
+        url = dotenv.get("DATABASE_URL");
+        // DATABASE_URL=postgres://postgres:mysecretpassword@localhost:5432/userdb
     }
 
     @Bean
-    public DataSource postgresDataSource() {
+    public DataSource postgresDataSource() throws URISyntaxException {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl(database_url);
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("mysecretpassword");
+        URI dbUri = new URI(url);
+
+        String username = dbUri.getUserInfo().split(":")[0];
+        String password = dbUri.getUserInfo().split(":")[1];
+        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+        dataSource.setUrl(dbUrl);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
 
         return dataSource;
     }
