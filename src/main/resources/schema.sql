@@ -1,10 +1,11 @@
-CREATE TABLE IF NOT EXISTS users (
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
     user_id UUID NOT NULL PRIMARY KEY,
     user_name VARCHAR NOT NULL,
     user_nickname VARCHAR,
     user_email VARCHAR NOT NULL UNIQUE,
     user_password VARCHAR NOT NULL,
-    created_at DATE
+    created_at VARCHAR NOT NULL   
 );
 
 -- INSERT INTO users (user_id, user_name, user_nickname, user_email, user_password, created_at)

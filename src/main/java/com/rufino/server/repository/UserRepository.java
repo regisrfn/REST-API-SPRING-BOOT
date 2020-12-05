@@ -1,6 +1,7 @@
 package com.rufino.server.repository;
 
-import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,8 +20,8 @@ public class UserRepository implements UserDao {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public User insertUser(UUID id, User user){
-        user.setCreatedAt(new Date());
+    public User insertUser(UUID id, User user) {
+        user.setCreatedAt(ZonedDateTime.now(ZoneId.of("Z")).toString());
         user.setUserId(id);
         int result = jdbcTemplate.update(
                 "INSERT INTO users " + "(user_id, user_name, user_nickname, user_email, user_password, created_at)"

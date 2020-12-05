@@ -1,6 +1,5 @@
 package com.rufino.server.model;
 
-import java.util.Date;
 import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
@@ -21,17 +20,17 @@ public class User {
     private String userEmail;
     @NotBlank(message = "Invalid password value")
     private String userPassword;
-    private Date createdAt;
+    private String createdAt;
 
     public UUID getUserId() {
         return userId;
     }
 
-    public Date getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
