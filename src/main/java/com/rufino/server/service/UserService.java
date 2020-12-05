@@ -1,12 +1,14 @@
 package com.rufino.server.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.rufino.server.dao.UserDao;
 import com.rufino.server.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,7 @@ public class UserService {
     private UserDao userDao;
 
     @Autowired
-    public UserService(UserDao userDao) {
+    public UserService(@Qualifier("DB_POSTGRES") UserDao userDao) {
         this.userDao = userDao;
     }
 
@@ -26,6 +28,10 @@ public class UserService {
         String hashedPassword = passwordEncoder.encode(user.getUserPassword());
         user.setUserPassword(hashedPassword);
         return userDao.insertUser(user);
+    }
+
+    public List<User> getAll(){
+        return userDao.getAllUsers();
     }
 
     public Map<String, String> handleSqlError(DataIntegrityViolationException e) {

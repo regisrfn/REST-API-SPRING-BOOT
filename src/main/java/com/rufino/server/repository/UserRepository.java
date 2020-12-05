@@ -8,10 +8,11 @@ import com.rufino.server.dao.UserDao;
 import com.rufino.server.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("DB_POSTGRES")
 public class UserRepository implements UserDao {
 
     @Autowired
@@ -37,8 +38,9 @@ public class UserRepository implements UserDao {
 
     @Override
     public List<User> getAllUsers() {
-        // TODO Auto-generated method stub
-        return null;
+        String sql = "SELECT * FROM USERS";
+        List<User> usersList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<User>(User.class));
+        return usersList;
     }
 
     @Override

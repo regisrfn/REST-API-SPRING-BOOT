@@ -1,5 +1,7 @@
 package com.rufino.server.api;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.auth0.jwt.JWT;
@@ -14,7 +16,9 @@ import com.rufino.server.validation.ValidateEmail;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,6 +59,15 @@ public class UserController {
             throw new ApiRequestException(e.getMessage());
         }
 
+    }
+
+    @GetMapping
+    public List<User> getAllUsers() {
+        try {
+            return userService.getAll();
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private String save(User user, JSONObject res) throws JsonProcessingException, JSONException {

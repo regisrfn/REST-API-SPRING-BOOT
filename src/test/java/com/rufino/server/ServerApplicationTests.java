@@ -2,10 +2,13 @@ package com.rufino.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
 import java.util.Map;
 
 import com.rufino.server.model.User;
 import com.rufino.server.service.UserService;
+
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,6 +79,24 @@ class ServerApplicationTests {
 			User newUser = new User("John Doe", "joe@gmail.com", "123456");
 			saveAndAssert(newUser, 1, 2);
 			assert (false);
+		} catch (DuplicateKeyException e) {
+			Map<String, String> columnError = userService.handleSqlError(e);
+			assertEquals("Duplicated email", columnError.get("userEmail"));
+		}
+	}
+
+	@Test
+	void itShouldGetAllUsers() {
+		try {
+			List<User> usersList = userService.getAll();
+			assertThat(usersList.size()).isEqualTo(0);
+			User user = new User("Joe Doe", "joe@gmail.com", "123456");
+			saveAndAssert(user);
+			User newUser = new User("John Doe", "joe2@gmail.com", "123456");
+			saveAndAssert(newUser, 1, 2);
+
+			usersList = userService.getAll();
+			assertThat(usersList.size()).isEqualTo(2);
 		} catch (DuplicateKeyException e) {
 			Map<String, String> columnError = userService.handleSqlError(e);
 			assertEquals("Duplicated email", columnError.get("userEmail"));

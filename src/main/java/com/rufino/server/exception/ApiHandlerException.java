@@ -22,7 +22,7 @@ public class ApiHandlerException {
 
     @ExceptionHandler(value = { ApiRequestException.class })
     public ResponseEntity<Object> handleApiRequestException(ApiRequestException e) {
-        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        HttpStatus httpStatus = e.getHttpStatus();
         Map<String, String> errors = new HashMap<>();
         errors.put("apiError", e.getMessage());
         ApiException apiException = new ApiException(errors, httpStatus, ZonedDateTime.now());
