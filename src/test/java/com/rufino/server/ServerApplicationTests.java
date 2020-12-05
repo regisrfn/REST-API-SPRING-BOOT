@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.rufino.server.model.User;
 import com.rufino.server.service.UserService;
@@ -33,6 +34,7 @@ class ServerApplicationTests {
 		jdbcTemplate.update("DELETE FROM USERS");
 	}
 
+	//////////////////////////////// CREATE USER /////////////////////////////////
 	@Test
 	void createNewUser() {
 		try {
@@ -41,7 +43,7 @@ class ServerApplicationTests {
 			assert (true);
 		} catch (DataIntegrityViolationException e) {
 			e.printStackTrace();
-			assert(false);
+			assert (false);
 		}
 
 	}
@@ -85,6 +87,7 @@ class ServerApplicationTests {
 		}
 	}
 
+	//////////////////////////////// GET ALL USERS /////////////////////////////////
 	@Test
 	void itShouldGetAllUsers() {
 		try {
@@ -101,6 +104,33 @@ class ServerApplicationTests {
 			Map<String, String> columnError = userService.handleSqlError(e);
 			assertEquals("Duplicated email", columnError.get("userEmail"));
 		}
+	}
+
+	//////////////////////////////// GET USER BY ID
+	//////////////////////////////// /////////////////////////////////
+	@Test
+	void itShouldGetUserById() {
+		User user = new User("Joe Doe", "joe@gmail.com", "123456");
+		saveAndAssert(user);
+		User newUser = new User("Joe Doe", "joe2@gmail.com", "654321");
+		saveAndAssert(newUser, 1, 2);
+
+		User userFromDb = userService.getUserById(user.getUserId());
+		assertThat(userFromDb.getUserEmail()).isEqualTo(user.getUserEmail());
+		assertThat(userFromDb.getUserName()).isEqualTo(user.getUserName());
+		assertThat(userFromDb.getUserPassword()).isEqualTo(user.getUserPassword());
+
+		userFromDb = userService.getUserById(newUser.getUserId());
+		assertThat(userFromDb.getUserEmail()).isEqualTo(newUser.getUserEmail());
+		assertThat(userFromDb.getUserName()).isEqualTo(newUser.getUserName());
+		assertThat(userFromDb.getUserPassword()).isEqualTo(newUser.getUserPassword());
+
+	}
+
+	@Test
+	void itShouldGetNullUser() {
+		User userFromDb = userService.getUserById(UUID.fromString("2755caca-e765-456c-ac2f-422602bd188c"));
+		assertThat(userFromDb).isNull();
 	}
 
 	private void saveAndAssert(User user) {

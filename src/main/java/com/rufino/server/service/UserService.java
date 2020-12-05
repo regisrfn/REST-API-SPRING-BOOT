@@ -3,6 +3,7 @@ package com.rufino.server.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.rufino.server.dao.UserDao;
 import com.rufino.server.model.User;
@@ -32,6 +33,10 @@ public class UserService {
 
     public List<User> getAll(){
         return userDao.getAllUsers();
+    }
+
+    public User getUserById(UUID id){
+        return userDao.getUser(id);
     }
 
     public Map<String, String> handleSqlError(DataIntegrityViolationException e) {

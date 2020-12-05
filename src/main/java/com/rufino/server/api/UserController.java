@@ -1,6 +1,7 @@
 package com.rufino.server.api;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.validation.Valid;
 
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +51,6 @@ public class UserController {
 
     @PostMapping("register")
     public String saveUser(@Valid @RequestBody User user) {
-
         JSONObject res = new JSONObject();
         try {
             if (!validateEmail.test(user.getUserEmail()))
@@ -66,8 +67,23 @@ public class UserController {
         try {
             return userService.getAll();
         } catch (Exception e) {
-            throw new ApiRequestException(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ApiRequestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("{id}")
+    public User getUser(@PathVariable String id) {
+        try {
+            UUID userId = UUID.fromString(id);
+            User user = userService.getUserById(userId);
+            if (user == null)
+                throw new ApiRequestException("User not found", HttpStatus.NOT_FOUND);
+            return user;
+
+        } catch (IllegalArgumentException e) {
+            throw new ApiRequestException("Invalid user UUID format", HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     private String save(User user, JSONObject res) throws JsonProcessingException, JSONException {
