@@ -2,24 +2,32 @@ package com.rufino.server.model;
 
 import java.util.UUID;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"userId", "userName","userNickname", "userEmail", "userPassword", "createdAt" })
+@JsonPropertyOrder({ "userId", "userName", "userNickname", "userEmail", "userPassword", "createdAt" })
 public class User {
     private UUID userId;
-    
+
     @NotBlank(message = "Value should not be empty")
+    @Size(min = 3, max = 30, message = "Value must be between 3 and 30 characters")
     private String userName;
+
     private String userNickname;
+
     @NotBlank(message = "Value should not be empty")
     private String userEmail;
+
     @NotBlank(message = "Value should not be empty")
+    @Min(value = 6, message = "Value must be greater then 6 characters")
     private String userPassword;
+    
     private String createdAt;
 
     public UUID getUserId() {
@@ -77,11 +85,12 @@ public class User {
         this.userPassword = userPassword;
     }
 
-    public User(String userName,String userEmail, String userPassword) {
+    public User(String userName, String userEmail, String userPassword) {
         this.userName = userName;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
     }
 
-    public User () {};
+    public User() {
+    };
 }

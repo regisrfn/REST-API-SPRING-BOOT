@@ -102,6 +102,38 @@ public class PostUserHttpTests {
     }
 
     @Test
+    void addUserTest_errorExpected_nameTooShort() throws Exception {
+        JSONObject my_obj = new JSONObject();
+        my_obj.put("userName", "a");
+        my_obj.put("userNickname", "doe");
+        my_obj.put("userEmail", "doe@gmail.com");
+        my_obj.put("userPassword", "123456");
+
+        mockMvc.perform(
+                post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userName",
+                        Is.is("Value must be between 3 and 30 characters")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
+                .andExpect(status().isBadRequest()).andReturn();
+    }
+
+    @Test
+    void addUserTest_errorExpected_nameTooBig() throws Exception {
+        JSONObject my_obj = new JSONObject();
+        my_obj.put("userName", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        my_obj.put("userNickname", "doe");
+        my_obj.put("userEmail", "doe@gmail.com");
+        my_obj.put("userPassword", "123456");
+
+        mockMvc.perform(
+                post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userName",
+                        Is.is("Value must be between 3 and 30 characters")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
+                .andExpect(status().isBadRequest()).andReturn();
+    }
+
+    @Test
     void addUserTest_errorExpected_email() throws Exception {
         JSONObject my_obj = new JSONObject();
         my_obj.put("userName", "Joe Doe");
