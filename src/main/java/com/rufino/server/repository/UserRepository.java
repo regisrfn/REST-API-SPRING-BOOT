@@ -3,12 +3,15 @@ package com.rufino.server.repository;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rufino.server.dao.UserDao;
 import com.rufino.server.model.User;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -64,8 +67,25 @@ public class UserRepository implements UserDao {
 
     @Override
     public User updateUser(UUID id, User user) {
-        // TODO Auto-generated method stub
-        return null;
+        String sql = "UPDATE USERS SET ";
+        ObjectMapper om = new ObjectMapper();
+        try {
+            String userString = om.writeValueAsString(user);
+            JSONObject jsonObject = new JSONObject(userString);
+            Iterator<String> keys = jsonObject.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                sql = sql + key.replaceAll("([A-Z])", "_$1").toLowerCase() + "='" + jsonObject.get(key) + "' ";
+                if (keys.hasNext()) {
+                    sql = sql + ", ";
+                }
+            }
+            int result = jdbcTemplate.update(sql + "where user_id = ?", id);
+            return (result > 0 ? getUser(id) : null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

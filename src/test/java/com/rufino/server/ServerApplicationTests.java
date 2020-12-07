@@ -1,6 +1,7 @@
 package com.rufino.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 import java.util.Map;
@@ -136,6 +137,59 @@ class ServerApplicationTests {
 		assertThat(userFromDb).isNull();
 	}
 
+	//////////////////////////////// UPDATE USER BY ID
+	//////////////////////////////// /////////////////////////////////
+	@Test
+	void itShouldUpdateUserName() {
+		User user = new User("Joe Doe", "joe@gmail.com", "123456");
+		saveAndAssert(user);
+		
+		User updatedUser = new User();
+		updatedUser.setUserName("Jonh Doe");
+		User userFromDb = userService.updateUserById(user.getUserId(), updatedUser);
+
+		assertThat(userFromDb.getUserName()).isEqualTo(updatedUser.getUserName());
+		assertThat(userFromDb.getUserEmail()).isEqualTo(user.getUserEmail());
+		assertThat(userFromDb.getCreatedAt()).isEqualTo(user.getCreatedAt());
+		assertThat(userFromDb.getUserId()).isEqualTo(user.getUserId());
+		assertThat(userFromDb.getUserPassword()).isEqualTo(user.getUserPassword());
+		assertThat(userFromDb.getUserNickname()).isEqualTo(user.getUserNickname());
+
+
+
+	}
+
+	@Test
+	void itShouldUpdateUserEmail() {
+		User user = new User("Joe Doe", "joe@gmail.com", "123456");
+		saveAndAssert(user);
+		
+		User updatedUser = new User();
+		updatedUser.setUserName("Jonh Doe");
+		updatedUser.setUserEmail("john@gmail.com");
+		User userFromDb = userService.updateUserById(user.getUserId(), updatedUser);
+
+		assertThat(userFromDb.getUserName()).isEqualTo(updatedUser.getUserName());
+		assertThat(userFromDb.getUserEmail()).isEqualTo(updatedUser.getUserEmail());
+		assertThat(userFromDb.getCreatedAt()).isEqualTo(user.getCreatedAt());
+		assertThat(userFromDb.getUserId()).isEqualTo(user.getUserId());
+		assertThat(userFromDb.getUserPassword()).isEqualTo(user.getUserPassword());
+		assertThat(userFromDb.getUserNickname()).isEqualTo(user.getUserNickname());
+	}
+
+	@Test
+	void itShouldNotUpdateUser() {
+		User user = new User("Joe Doe", "joe@gmail.com", "123456");
+		saveAndAssert(user);
+		
+		User updatedUser = new User();
+		updatedUser.setUserEmail(null);
+		User userFromDb = userService.updateUserById(user.getUserId(), updatedUser);
+
+		assertNull(userFromDb);
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	private void saveAndAssert(User user) {
 		long countBeforeInsert = jdbcTemplate.queryForObject("select count(*) from users", Long.class);
 		assertEquals(0, countBeforeInsert);

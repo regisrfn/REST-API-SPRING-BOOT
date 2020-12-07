@@ -35,4 +35,8 @@ public class UserService {
     public User getUserById(UUID id){
         return userDao.getUser(id);
     }
+
+    public User updateUserById(UUID id, User user){
+        return userDao.updateUser(id, user);
+    }
 }
