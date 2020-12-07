@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.rufino.server.exception.ApiHandlerException;
 import com.rufino.server.model.User;
 import com.rufino.server.service.UserService;
 
@@ -26,6 +27,8 @@ class ServerApplicationTests {
 
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private ApiHandlerException apiHandlerException;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -55,8 +58,8 @@ class ServerApplicationTests {
 			saveAndAssert(user);
 			assert (false);
 		} catch (DataIntegrityViolationException e) {
-			Map<String, String> columnError = userService.handleSqlError(e);
-			assertEquals("Invalid name value", columnError.get("userName"));
+			Map<String, String> columnError = apiHandlerException.handleSqlError(e);
+			assertEquals("Value should not be empty", columnError.get("userName"));
 		}
 
 	}
@@ -68,8 +71,8 @@ class ServerApplicationTests {
 			saveAndAssert(user);
 			assert (false);
 		} catch (DataIntegrityViolationException e) {
-			Map<String, String> columnError = userService.handleSqlError(e);
-			assertEquals("Invalid email value", columnError.get("userEmail"));
+			Map<String, String> columnError = apiHandlerException.handleSqlError(e);
+			assertEquals("Value should not be empty", columnError.get("userEmail"));
 		}
 	}
 
@@ -82,7 +85,7 @@ class ServerApplicationTests {
 			saveAndAssert(newUser, 1, 2);
 			assert (false);
 		} catch (DuplicateKeyException e) {
-			Map<String, String> columnError = userService.handleSqlError(e);
+			Map<String, String> columnError = apiHandlerException.handleSqlError(e);
 			assertEquals("Duplicated email", columnError.get("userEmail"));
 		}
 	}
@@ -101,7 +104,7 @@ class ServerApplicationTests {
 			usersList = userService.getAll();
 			assertThat(usersList.size()).isEqualTo(2);
 		} catch (DuplicateKeyException e) {
-			Map<String, String> columnError = userService.handleSqlError(e);
+			Map<String, String> columnError = apiHandlerException.handleSqlError(e);
 			assertEquals("Duplicated email", columnError.get("userEmail"));
 		}
 	}
