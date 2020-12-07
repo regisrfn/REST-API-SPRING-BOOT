@@ -81,7 +81,7 @@ public class PostUserHttpTests {
 
         mockMvc.perform(
                 post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userName", Is.is("Invalid name value")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userName", Is.is("Value should not be empty")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
                 .andExpect(status().isBadRequest()).andReturn();
     }
@@ -96,7 +96,7 @@ public class PostUserHttpTests {
 
         mockMvc.perform(
                 post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userName", Is.is("Invalid name value")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userName", Is.is("Value should not be empty")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
                 .andExpect(status().isBadRequest()).andReturn();
     }
@@ -110,7 +110,7 @@ public class PostUserHttpTests {
 
         mockMvc.perform(
                 post("/api/v1/user/register").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userEmail", Is.is("Invalid email value")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors.userEmail", Is.is("Value should not be empty")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", Is.is("Not OK")))
                 .andExpect(status().isBadRequest()).andReturn();
 

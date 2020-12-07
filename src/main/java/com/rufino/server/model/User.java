@@ -13,12 +13,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class User {
     private UUID userId;
     
-    @NotBlank(message = "Invalid name value")
+    @NotBlank(message = "Value should not be empty")
     private String userName;
     private String userNickname;
-    @NotBlank(message = "Invalid email value")
+    @NotBlank(message = "Value should not be empty")
     private String userEmail;
-    @NotBlank(message = "Invalid password value")
+    @NotBlank(message = "Value should not be empty")
     private String userPassword;
     private String createdAt;
 
