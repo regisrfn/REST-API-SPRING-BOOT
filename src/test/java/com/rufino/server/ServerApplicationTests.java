@@ -1,13 +1,13 @@
 package com.rufino.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import com.rufino.server.exception.ApiHandlerException;
+import com.rufino.server.exception.ApiRequestException;
 import com.rufino.server.model.User;
 import com.rufino.server.service.UserService;
 
@@ -143,7 +143,7 @@ class ServerApplicationTests {
 	void itShouldUpdateUserName() {
 		User user = new User("Joe Doe", "joe@gmail.com", "123456");
 		saveAndAssert(user);
-		
+
 		User updatedUser = new User();
 		updatedUser.setUserName("Jonh Doe");
 		User userFromDb = userService.updateUserById(user.getUserId(), updatedUser);
@@ -155,15 +155,13 @@ class ServerApplicationTests {
 		assertThat(userFromDb.getUserPassword()).isEqualTo(user.getUserPassword());
 		assertThat(userFromDb.getUserNickname()).isEqualTo(user.getUserNickname());
 
-
-
 	}
 
 	@Test
 	void itShouldUpdateUserEmail() {
 		User user = new User("Joe Doe", "joe@gmail.com", "123456");
 		saveAndAssert(user);
-		
+
 		User updatedUser = new User();
 		updatedUser.setUserName("Jonh Doe");
 		updatedUser.setUserEmail("john@gmail.com");
@@ -179,14 +177,16 @@ class ServerApplicationTests {
 
 	@Test
 	void itShouldNotUpdateUser() {
-		User user = new User("Joe Doe", "joe@gmail.com", "123456");
-		saveAndAssert(user);
-		
-		User updatedUser = new User();
-		updatedUser.setUserEmail(null);
-		User userFromDb = userService.updateUserById(user.getUserId(), updatedUser);
+		try {
+			User user = new User("Joe Doe", "joe@gmail.com", "123456");
+			saveAndAssert(user);
+			User updatedUser = new User();
+			updatedUser.setUserEmail(null);
+			userService.updateUserById(user.getUserId(), updatedUser);
 
-		assertNull(userFromDb);
+		} catch (ApiRequestException e) {
+			assertEquals(e.getMessage(), "No valid data to update");
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

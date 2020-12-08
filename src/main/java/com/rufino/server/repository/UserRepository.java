@@ -7,9 +7,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rufino.server.dao.UserDao;
+import com.rufino.server.exception.ApiRequestException;
 import com.rufino.server.model.User;
+import com.rufino.server.validation.ValidateEmail;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,8 @@ public class UserRepository implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
     private List<User> usersList;
+    @Autowired
+    private ValidateEmail validateEmail;
 
     @Autowired
     public UserRepository(JdbcTemplate jdbcTemplate) {
@@ -69,12 +74,24 @@ public class UserRepository implements UserDao {
     public User updateUser(UUID id, User user) {
         String sql = "UPDATE USERS SET ";
         ObjectMapper om = new ObjectMapper();
+        String userString;
         try {
-            String userString = om.writeValueAsString(user);
+            userString = om.writeValueAsString(user);
             JSONObject jsonObject = new JSONObject(userString);
             Iterator<String> keys = jsonObject.keys();
+            if (!keys.hasNext()) {
+                throw new ApiRequestException("No valid data to update");
+            }
             while (keys.hasNext()) {
                 String key = keys.next();
+                switch (key) {
+                    case "userEmail":
+                        if (!validateEmail.test(jsonObject.get(key).toString()))
+                            throw new ApiRequestException("Invalid email format");
+                        break;
+                    default:
+                        break;
+                }
                 sql = sql + key.replaceAll("([A-Z])", "_$1").toLowerCase() + "='" + jsonObject.get(key) + "' ";
                 if (keys.hasNext()) {
                     sql = sql + ", ";
@@ -82,10 +99,11 @@ public class UserRepository implements UserDao {
             }
             int result = jdbcTemplate.update(sql + "where user_id = ?", id);
             return (result > 0 ? getUser(id) : null);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return null;
+            throw new ApiRequestException(e.getMessage());
         }
+
     }
 
 }
