@@ -25,12 +25,12 @@ public class UserRepository implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
     private List<User> usersList;
-    @Autowired
     private ValidateEmail validateEmail;
 
     @Autowired
-    public UserRepository(JdbcTemplate jdbcTemplate) {
+    public UserRepository(JdbcTemplate jdbcTemplate, ValidateEmail validateEmail) {
         this.jdbcTemplate = jdbcTemplate;
+        this.validateEmail = validateEmail;
         usersList = new ArrayList<>();
     }
 
@@ -48,8 +48,13 @@ public class UserRepository implements UserDao {
 
     @Override
     public int deleteUser(UUID id) {
-        // TODO Auto-generated method stub
-        return 0;
+        try {
+            return jdbcTemplate.update("delete from users where user_id = ?", id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+
     }
 
     @Override

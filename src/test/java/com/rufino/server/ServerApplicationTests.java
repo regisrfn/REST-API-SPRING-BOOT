@@ -189,6 +189,39 @@ class ServerApplicationTests {
 		}
 	}
 
+	//////////////////////////////// DELETE USER BY ID
+	//////////////////////////////// /////////////////////////////////
+	@Test
+	public void itShouldDeleteUser() {
+		User user = new User("Joe Doe", "joe@gmail.com", "123456");
+		saveAndAssert(user);
+
+		int result = userService.deleteUser(user.getUserId());
+		long countAfterInsert = jdbcTemplate.queryForObject("select count(*) from users", Long.class);
+		assertEquals(0, countAfterInsert);
+		if (result > 0) {
+			assert (true);
+		} else {
+			assert (false);
+		}
+	}
+
+	@Test
+	public void itShouldNotDeleteUser() {
+		User user = new User("Joe Doe", "joe@gmail.com", "123456");
+		saveAndAssert(user);
+
+		int result = userService.deleteUser(UUID.fromString("2755caca-e765-456c-ac2f-422602bd188c"));
+		long countAfterInsert = jdbcTemplate.queryForObject("select count(*) from users", Long.class);
+		assertEquals(1, countAfterInsert);
+		if (result > 0) {
+			assert (false);
+		} else {
+			assert (true);
+		}
+	}
+
+
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	private void saveAndAssert(User user) {
 		long countBeforeInsert = jdbcTemplate.queryForObject("select count(*) from users", Long.class);
