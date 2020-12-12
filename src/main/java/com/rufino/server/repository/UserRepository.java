@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rufino.server.dao.UserDao;
 import com.rufino.server.exception.ApiRequestException;
 import com.rufino.server.model.User;
-import com.rufino.server.validation.ValidateEmail;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +24,10 @@ public class UserRepository implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
     private List<User> usersList;
-    private ValidateEmail validateEmail;
 
     @Autowired
-    public UserRepository(JdbcTemplate jdbcTemplate, ValidateEmail validateEmail) {
+    public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.validateEmail = validateEmail;
         usersList = new ArrayList<>();
     }
 
@@ -89,14 +86,6 @@ public class UserRepository implements UserDao {
             }
             while (keys.hasNext()) {
                 String key = keys.next();
-                switch (key) {
-                    case "userEmail":
-                        if (!validateEmail.test(jsonObject.get(key).toString()))
-                            throw new ApiRequestException("Invalid email format");
-                        break;
-                    default:
-                        break;
-                }
                 sql = sql + key.replaceAll("([A-Z])", "_$1").toLowerCase() + "='" + jsonObject.get(key) + "' ";
                 if (keys.hasNext()) {
                     sql = sql + ", ";
