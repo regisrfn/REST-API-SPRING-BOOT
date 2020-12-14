@@ -62,6 +62,11 @@ public class UserService {
                         if (!validateEmail.test(jsonObject.get(key).toString()))
                             throw new ApiRequestException("Invalid email format");
                         break;
+                    case "userPassword":
+                        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                        String hashedPassword = passwordEncoder.encode(user.getUserPassword());
+                        user.setUserPassword(hashedPassword);
+                        break;
                     default:
                         break;
                 }

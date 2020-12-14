@@ -158,6 +158,24 @@ class ServerApplicationTests {
 	}
 
 	@Test
+	void itShouldUpdateUserPassword() {
+		User user = new User("Joe Doe", "joe@gmail.com", "123456");
+		saveAndAssert(user);
+
+		User updatedUser = new User();
+		updatedUser.setUserPassword("654321");
+		User userFromDb = userService.updateUserById(user.getUserId(), updatedUser);
+
+		assertThat(userFromDb.getUserName()).isEqualTo(user.getUserName());
+		assertThat(userFromDb.getUserEmail()).isEqualTo(user.getUserEmail());
+		assertThat(userFromDb.getCreatedAt()).isEqualTo(user.getCreatedAt());
+		assertThat(userFromDb.getUserId()).isEqualTo(user.getUserId());
+		assertThat(userFromDb.getUserPassword()).isEqualTo(updatedUser.getUserPassword());
+		assertThat(userFromDb.getUserNickname()).isEqualTo(user.getUserNickname());
+
+	}
+
+	@Test
 	void itShouldUpdateUserEmail() {
 		User user = new User("Joe Doe", "joe@gmail.com", "123456");
 		saveAndAssert(user);
