@@ -59,13 +59,33 @@ public class RequestApiUpdateUserByIdTests {
     }
 
     @Test
-    void itShouldNotUpdateUser_InvalidEmail() throws Exception {
+    void itShouldNotUpdateUser_BlankEmail() throws Exception {
         User user = new User("Joe Doe", "joe@gmail.com", "123456");
         saveAndAssert(user, 0, 1);
 
         JSONObject my_obj = new JSONObject();
         my_obj.put("userName", "John Doe");
         my_obj.put("userEmail", "  ");
+
+        mockMvc.perform(put("/api/v1/user/" + user.getUserId()).contentType(MediaType.APPLICATION_JSON)
+                .content(my_obj.toString())).andExpect(MockMvcResultMatchers.jsonPath("$.userName", Is.is("John Doe")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userEmail", Is.is(user.getUserEmail())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userName", Is.is("John Doe")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userPassword", Is.is(user.getUserPassword())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.createdAt", Is.is(user.getCreatedAt())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId", Is.is(user.getUserId().toString())))
+                .andExpect(status().isOk()).andReturn();
+
+    }
+
+    @Test
+    void itShouldNotUpdateUser_InvalidEmail() throws Exception {
+        User user = new User("Joe Doe", "joe@gmail.com", "123456");
+        saveAndAssert(user, 0, 1);
+
+        JSONObject my_obj = new JSONObject();
+        my_obj.put("userName", "John Doe");
+        my_obj.put("userEmail", "joe@gmailcom");
 
         mockMvc.perform(put("/api/v1/user/" + user.getUserId()).contentType(MediaType.APPLICATION_JSON)
                 .content(my_obj.toString()))

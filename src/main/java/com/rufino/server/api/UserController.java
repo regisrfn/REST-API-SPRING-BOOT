@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -88,10 +89,27 @@ public class UserController {
     }
 
     @PutMapping("{id}")
-    public User updateUser(@PathVariable String id, @RequestBody User user) {
+    public User updateUser(@PathVariable String id, @Valid @RequestBody User user, BindingResult bindingResult) {
         try {
+            User validatedUser = new User();
+            if (bindingResult.hasErrors()) {
+                // ignore field password
+                if (!bindingResult.hasFieldErrors("userEmail")) {
+                    validatedUser.setUserEmail(user.getUserEmail());
+                }
+                if (!bindingResult.hasFieldErrors("userName")) {
+                    validatedUser.setUserName(user.getUserName());
+                }
+                if (!bindingResult.hasFieldErrors("userPassword")) {
+                    validatedUser.setUserPassword(user.getUserPassword());
+                }
+            }
+            // no validation needed
+            validatedUser.setCreatedAt(user.getUserPassword());
+            validatedUser.setUserNickname(user.getUserEmail());
+
             UUID userId = UUID.fromString(id);
-            return userService.updateUserById(userId, user);    
+            return userService.updateUserById(userId, validatedUser);
         } catch (IllegalArgumentException e) {
             throw new ApiRequestException("Invalid user UUID format", HttpStatus.BAD_REQUEST);
         }
